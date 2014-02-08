@@ -73,29 +73,27 @@ void init_arduRC()
 	// ---------------------------------------------------------
 
     // load parameters from EEPROM
-	load_parameters();
+	//load_parameters();
 	print_radio_cal();
 
 
 	// set Analog out 4 to output
 	//DDRC |= B00010000;
 
+
 	// setup expo
-	//g.roll.set_expo(50);
-	//g.pitch.set_expo(50);
-	//g.yaw.set_expo(50);
-	//g.throttle.set_expo(0);
+	//roll.set_expo(50);
+	//pitch.set_expo(50);
+	//yaw.set_expo(50);
+	//throttle.set_expo(0);
 
-	g.roll.load_eeprom();
-	g.pitch.load_eeprom();
-	g.throttle.load_eeprom();
-	g.yaw.load_eeprom();
 
-	g.throttle._dead_zone = 90;
-	g.throttle.set_reverse(true);
-	g.roll.set_reverse(true);
-	g.yaw.set_reverse(true);
+	throttle._dead_zone = 90;
+	throttle.set_reverse(true);
+	roll.set_reverse(true);
+	yaw.set_reverse(true);
 
+    load_eeprom();
 
 	// The ADC input range (or gain) can be changed via the following
 	// functions, but be careful never to exceed VDD +0.3V max, or to
@@ -147,8 +145,12 @@ void init_arduRC()
 static void
 update_control_mode()
 {
+    // constrain to 0:5
 	current_mode = min(current_mode, 5);
+
+    // PWM is mapped to mode_pwm's preset values
 	pwm_output[CH_5] = mode_pwm[current_mode];
+
 	//cliSerial->printf_P(PSTR("PWM Out %d\n"), pwm_output[CH_5]);
 }
 
@@ -159,11 +161,12 @@ update_tether_options()
 {
 	float temp;
 
+    // we are always in stabilize!
 	pwm_output[CH_5] = mode_pwm[0];
 
 	switch(current_mode){
 
-		case 0:
+		case 0: // stabilize
 			tetherGo = false;
 			//cliSerial->printf_P(PSTR("OFF\n"));
 		break;
@@ -171,19 +174,19 @@ update_tether_options()
 		case 1:
 			//cliSerial->printf_P(PSTR("P-\n"));
 			// decrease P
-			temp = g.pid_roll.kP() - .005;
+			temp = pid_roll.kP() - .005;
 			temp = max(temp, 0);
-	        g.pid_roll.kP(temp);
-	        g.pid_pitch.kP(temp);
+	        pid_roll.kP(temp);
+	        pid_pitch.kP(temp);
 		break;
 
 		case 2:
 			//cliSerial->printf_P(PSTR("D-\n"));
 			// decrease D
-			temp = g.pid_roll.kD() - .001;
+			temp = pid_roll.kD() - .001;
 			temp = max(temp, 0);
-	        g.pid_roll.kD(temp);
-	        g.pid_pitch.kD(temp);
+	        pid_roll.kD(temp);
+	        pid_pitch.kD(temp);
 		break;
 
 		case 3:
@@ -192,20 +195,20 @@ update_tether_options()
 		break;
 
 		case 4:
-			//cliSerial->printf_P(PSTR("P+ %1.4f\n"), g.pid_roll.kP().get());
-			temp = g.pid_roll.kP() + .005;
+			//cliSerial->printf_P(PSTR("P+ %1.4f\n"), pid_roll.kP().get());
+			temp = pid_roll.kP() + .005;
 			temp = max(temp, 0);
-	        g.pid_roll.kP(temp);
-	        g.pid_pitch.kP(temp);
+	        pid_roll.kP(temp);
+	        pid_pitch.kP(temp);
 		break;
 
 		case 5:
 			// increase D
 			//cliSerial->printf_P(PSTR("D+\n"));
-			temp = g.pid_roll.kD() + .001;
+			temp = pid_roll.kD() + .001;
 			temp = max(temp, 0);
-	        g.pid_roll.kD(temp);
-	        g.pid_pitch.kD(temp);
+	        pid_roll.kD(temp);
+	        pid_pitch.kD(temp);
 		break;
 
 	}
@@ -217,6 +220,8 @@ update_tether_options()
 //     _____	 _____     _____	 _____     _____	 _____     _____	 _____     __________________
 //  __| 1   |___|2    |___| 3   |___| 4   |___| 5   |___| 6   |___| 7   |___| 8   |___|                  |
 //  400      400	   400	     400	   400	     400	   400	     400 	   400
+
+volatile uint16_t _ppm_sent;
 
 // called each ime we reach our compare value set by OCR1A
 ISR(TIMER1_COMPA_vect)

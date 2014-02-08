@@ -1,3 +1,9 @@
+// Receive buffer
+static union {
+	//int32_t long_value;
+	int16_t int_value;
+	uint8_t bytes[];
+} bytes_union;
 
 
 //	memcpy(bytes_union.bytes, &buff[1], 2);

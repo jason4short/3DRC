@@ -76,57 +76,55 @@ public:
     //@{
 
     /// Overload the function call operator to permit relatively easy initialisation
-    void operator        () (const float    p,
-                             const float    i,
-                             const float    d,
-                             const int16_t  imaxval) {
+    void operator () (const float    p,
+                      const float    i,
+                      const float    d,
+                      const int16_t  imaxval) {
         _kp = p; _ki = i; _kd = d; _imax = abs(imaxval);
     }
 
-    float        kP() const {
-        return _kp.get();
+    float kP() const {
+        return _kp;
     }
-    float        kI() const {
-        return _ki.get();
+    float kI() const {
+        return _ki;
     }
-    float        kD() const {
-        return _kd.get();
+    float kD() const {
+        return _kd;
     }
     int16_t        imax() const {
-        return _imax.get();
+        return _imax;
     }
 
-    void        kP(const float v)               {
-        _kp.set(v);
+    void  kP(const float v){
+        _kp = v;
     }
-    void        kI(const float v)               {
-        _ki.set(v);
+    void  kI(const float v){
+        _ki = v;
     }
-    void        kD(const float v)               {
-        _kd.set(v);
+    void  kD(const float v){
+        _kd = v;
     }
-    void        imax(const int16_t v)   {
-        _imax.set(abs(v));
+    void  imax(const int16_t v){
+        _imax = abs(v);
     }
 
-    float        get_integrator() const {
+    float get_integrator() const {
         return _integrator;
     }
-    void        set_integrator(float i) {
+    void  set_integrator(float i) {
         _integrator = i;
     }
 
-    static const struct AP_Param::GroupInfo        var_info[];
-
 private:
-    AP_Float        _kp;
-    AP_Float        _ki;
-    AP_Float        _kd;
-    AP_Int16        _imax;
+    float       _kp;
+    float       _ki;
+    float       _kd;
+    int16_t     _imax;
 
-    float           _integrator;                                ///< integrator value
-    int32_t         _last_input;                                ///< last input for derivative
-    float           _last_derivative;                           ///< last derivative for low-pass filter
+    float       _integrator;                                ///< integrator value
+    int32_t     _last_input;                                ///< last input for derivative
+    float       _last_derivative;                           ///< last derivative for low-pass filter
 
     /// Low pass filter cut frequency for derivative calculation.
     ///

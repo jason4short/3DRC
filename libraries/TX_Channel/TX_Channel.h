@@ -7,7 +7,6 @@
 #define TX_Channel_h
 
 #include <AP_Common.h>
-#include <AP_Param.h>
 
 /// @class	TX_Channel
 /// @brief	Object managing one RC channel
@@ -37,7 +36,6 @@ public:
     int16_t    	get_PWM(bool use_trim);
     void    	set_ADC(int16_t adc_input);
 
-
     // setup the control preferences
     void       	set_reverse(bool reverse);
     bool       	get_reverse(void);
@@ -47,17 +45,15 @@ public:
 
 	bool 		_reverse;
 
-    AP_Int16    _adc_min;
-    AP_Int16    _adc_trim;
-    AP_Int16    _adc_max;
-	AP_Int8		_expo;
+    int16_t     _adc_min;
+    int16_t     _adc_trim;
+    int16_t     _adc_max;
+	int8_t	    _expo;
     int16_t 	_adc_in;
 
     float 		_expo_precalc;
     int16_t    	_adc_buffer;
-    AP_Int16    _dead_zone;
-
-    static const struct AP_Param::GroupInfo         var_info[];
+    int16_t     _dead_zone;
 
 
 private:
