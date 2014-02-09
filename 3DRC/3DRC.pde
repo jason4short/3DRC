@@ -118,6 +118,8 @@ void setup()
     const prog_char_t *msg = PSTR("\nInit 3DRC\nPress ENTER 3 times to start interactive setup\n");
     cliSerial->println_P(msg);
 	init_arduRC();
+///				run_cli(cliSerial);
+
 }
 
 
@@ -132,7 +134,7 @@ void loop()
 	}
 
 	// test switch output
-	//test_switches();
+	///test_switches();
 
     // Only do the CLI if the three carriage returns
     // happen within 5 seconds of boot
@@ -174,6 +176,8 @@ void loop()
 		mode_change_flag = false;
 		if((timer - bounce) > DEBOUNCER){
 			bounce = timer;
+    		cliSerial->printf_P(PSTR("!!\n"));
+
 			if(tether){
 				update_tether_options();
 			}else{

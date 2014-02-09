@@ -12,7 +12,7 @@
 #define DISABLE DISABLED
 
 // used to debounce button input
-#define DEBOUNCER 100000
+#define DEBOUNCER 400000
 
 
 #define CH_1 0

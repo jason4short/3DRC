@@ -290,7 +290,7 @@ ISR(PCINT2_vect) {
 	if(~PIND & SW6){
 		current_mode = 3;
 		mode_change_flag = 1;
-		//cliSerial->printf_P(PSTR("6\n"));
+	    //cliSerial->printf_P(PSTR("6\n"));
 	}
 	if(~PIND & SW5){
 		current_mode = 4;

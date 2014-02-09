@@ -134,7 +134,7 @@ TX_Channel::set_expo(uint8_t expo)
 	_expo = max(_expo, 0);
 	_expo = min(_expo, 100);
 	_expo_precalc = pow(4.0,((float)_expo/100.0));
-	Serial.printf_P(PSTR("set_exp %1.4f\n\n"), _expo_precalc);
+	Serial.printf_P(PSTR("set_exp %d = %1.4f\n\n"), expo, _expo_precalc);
 
     //_expo.save();
 }

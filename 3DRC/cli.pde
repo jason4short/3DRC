@@ -144,18 +144,23 @@ test_expo(uint8_t argc, const Menu::arg *argv)
 	uint8_t ch  = constrain(argv[1].i, 1, 4);
 	uint8_t expo  = constrain(argv[2].i, 0, 100);
 
+
 	switch(ch){
 		case 1:
 		roll.set_expo(expo);
+    	eeprom_write_word((uint16_t *)	EE_CH1_EXPO,  	roll.get_expo());
 		break;
 		case 2:
 		pitch.set_expo(expo);
+    	eeprom_write_word((uint16_t *)	EE_CH2_EXPO,  	pitch.get_expo());
 		break;
 		case 3:
 		throttle.set_expo(expo);
+    	eeprom_write_word((uint16_t *)	EE_CH3_EXPO,  	throttle.get_expo());
 		break;
 		case 4:
 		yaw.set_expo(expo);
+    	eeprom_write_word((uint16_t *)	EE_CH4_EXPO,  	yaw.get_expo());
 		break;
 	}
 
