@@ -14,6 +14,7 @@ static int8_t   main_menu_help(uint8_t argc, const Menu::arg *argv)
                          "  eedump\n"
                          "  erase\n"
                          "  reset\n"
+                         "  ch7\n"
                          "\n"));
     return(0);
 }
@@ -24,24 +25,26 @@ static int8_t   test_show			(uint8_t argc, const Menu::arg *argv);         // in
 static int8_t   setup_tether		(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_cal_sticks		(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_eedump			(uint8_t argc, const Menu::arg *argv);
-static int8_t   test_proto		      (uint8_t argc, const Menu::arg *argv);
+static int8_t   test_proto		    (uint8_t argc, const Menu::arg *argv);
 static int8_t   setup_erase         (uint8_t argc, const Menu::arg *argv);
+static int8_t   test_ch7            (uint8_t argc, const Menu::arg *argv);
 
 
 // Command/function table for the top-level menu.
 const struct Menu::command main_menu_commands[] PROGMEM = {
 //   command		function called
 //   =======        ===============
-    {"erase",        setup_erase},
-    {"ppm",          test_ppm},
-    {"cal",	         test_cal_sticks},
-    {"adc",          test_adc},
-    {"expo",         test_expo},
-    {"tether",       setup_tether},
-    {"proto",        test_proto},
-    {"show",         test_show},
-    {"help",         main_menu_help},
-    {"eedump",       test_eedump},
+    {"erase",       setup_erase},
+    {"ppm",         test_ppm},
+    {"cal",	        test_cal_sticks},
+    {"adc",         test_adc},
+    {"expo",        test_expo},
+    {"tether",      setup_tether},
+    {"proto",       test_proto},
+    {"show",        test_show},
+    {"help",        main_menu_help},
+    {"eedump",      test_eedump},
+    {"ch7",         test_ch7},
 
 };
 
@@ -75,6 +78,17 @@ trim_sticks()
 	throttle.detect_trim();
 	yaw.detect_trim();
 }
+
+static int8_t
+test_ch7(uint8_t argc, const Menu::arg *argv)
+{
+    if(~PIND & SW7){
+        cliSerial->printf_P(PSTR("CH 7 high\n"));
+    }else{
+        cliSerial->printf_P(PSTR("CH 7 low\n"));
+    }
+}
+
 
 static int8_t
 test_proto(uint8_t argc, const Menu::arg *argv)

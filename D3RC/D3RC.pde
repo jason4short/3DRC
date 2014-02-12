@@ -118,8 +118,14 @@ void setup()
     const prog_char_t *msg = PSTR("\nInit 3DRC\nPress ENTER 3 times to start interactive setup\n");
     cliSerial->println_P(msg);
 	init_arduRC();
-///				run_cli(cliSerial);
 
+    delay(500);
+    cliSerial->printf_P(PSTR("!\n"));
+
+	if(~PIND & SW3){
+	    tether = true;
+    	cliSerial->printf_P(PSTR("Tether ON\n"));
+	}
 }
 
 
@@ -140,12 +146,8 @@ void loop()
     // happen within 5 seconds of boot
 	if(timer < 5000000){
 		cli_update();
-    	if(mode_change_flag  && current_mode == 0){
-	    	mode_change_flag = false;
-	    	// we've pressed a button during startup;
-	    	// enable the tether mode
-	    	tether = true;
-	    }
+		delay(5);
+    	cliSerial->printf_P(PSTR(".\n"));
 
 	}else{
 	    // else read input via serial for
@@ -165,6 +167,7 @@ void loop()
 		}
 
 		counter_one_herz++;
+
 		if(counter_one_herz == 50){
 			super_slow_loop();
 			counter_one_herz = 0;

@@ -23,7 +23,7 @@ void init_arduRC()
 	pinMode(7,INPUT);	// PD7 - PCINT23	- AIN1		- GPS Mux pin
 
 	// PORTB
-	pinMode(8, OUTPUT); // PB0 - PCINT0		- ICP1 		- Servo throttle					- OUTPUT THROTTLE
+	pinMode(8, INPUT); // PB0 - PCINT0		- ICP1 		- Servo throttle					- OUTPUT THROTTLE
 	pinMode(9, OUTPUT);	// PB1 - PCINT1		- OC1A 		- Elevator PWM out					- Elevator PWM out
 	pinMode(10,OUTPUT);	// PB2 - PCINT2		- OC1B		- Rudder PWM out					- Aileron PWM out
 	pinMode(11,OUTPUT); // PB3 - PCINT3		- MOSI/OC2	-
@@ -39,6 +39,7 @@ void init_arduRC()
 	digitalWrite(5, HIGH);
 	digitalWrite(6, HIGH);
 	digitalWrite(7, HIGH);
+	digitalWrite(8, HIGH);
 
 	//pinMode(pin, INPUT);           // set pin to input
 	//digitalWrite(pin, HIGH);       // turn on pullup resistors
@@ -46,6 +47,7 @@ void init_arduRC()
 	// setup PPM output:
 	pinMode(PPM_OUT_PIN, OUTPUT);
 	digitalWrite(PPM_OUT_PIN, !POLARITY);	// set the PPM signal pin to the default state (off)
+    cliSerial->printf_P(PSTR("!!\n"));
 
  	// ATMEGA ADC
  	// PC0 - ADC0 	- PCINT8
@@ -86,6 +88,7 @@ void init_arduRC()
 	//pitch.set_expo(50);
 	//yaw.set_expo(50);
 	//throttle.set_expo(0);
+    cliSerial->printf_P(PSTR("#\n"));
 
 
 	throttle._dead_zone = 90;
@@ -94,16 +97,17 @@ void init_arduRC()
 	yaw.set_reverse(true);
 
     load_eeprom();
+    cliSerial->printf_P(PSTR("33\n"));
 
 	// The ADC input range (or gain) can be changed via the following
 	// functions, but be careful never to exceed VDD +0.3V max, or to
 	// exceed the upper and lower limits if you adjust the input range!
 	// Setting these values incorrectly may destroy your ADC!
 
-	ads.begin();
+	//ads.begin();
 	//                                                                ADS1015  ADS1115
 	//                                                                -------  -------
-	ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
+	//ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
 	//ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
 	// ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
 	// ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
@@ -135,6 +139,7 @@ void init_arduRC()
 	// look for an overflow interrupt every 22.5ms
 	// Enable CTC interrupts whenever we match our CTC
 	TIMSK1 |= _BV(OCIE1A);
+    cliSerial->printf_P(PSTR("$\n"));
 
 	// Set initial compare value to trigger interrupt
 	OCR1A = 100;
