@@ -23,6 +23,18 @@
 //
 #include "defines.h"
 
+
+
+//////////////////////CONFIGURATION///////////////////////////////
+#define MAX_CHANNELS 8			//set the number of chanels
+//#define PPM_FRAME 22500		//set the PPM frame length in microseconds (1ms = 1000µs)	//http://www.mftech.de/ppm_en.htm
+#define PPM_FRAME 20025
+#define PPM_PULSE 400			//set the pulse length
+#define POLARITY 0				//set polarity of the pulses: 1 is positive, 0 is negative
+//////////////////////////////////////////////////////////////////
+
+
+
 //////////////////////////////////////////////////////////////////////////////
 // Loiter position control gains
 //
@@ -41,6 +53,22 @@
 #ifndef RATE_ROLL_IMAX
  # define RATE_ROLL_IMAX          		500
 #endif
+
+
+
+
+
+#ifndef ADC_INPUT
+ #define ADC_INPUT  ADC_AVR
+ //#define ADC_INPUT    ADC_I2C
+#endif
+
+
+#ifndef BOARD_TYPE
+ //#define BOARD_TYPE  APM_BOARD
+ #define BOARD_TYPE    PRO_MINI_BOARD
+#endif
+
 
 
 #endif // __ARDUCOPTER_CONFIG_H__

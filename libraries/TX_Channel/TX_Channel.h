@@ -18,7 +18,9 @@ public:
     /// @param name     Optional name for the group.
     ///
     TX_Channel():
-    	_reverse(false)
+    	_reverse(false),
+    	_dead_zone(0),
+    	_expo_precalc(1)
     {
     }
 
@@ -51,9 +53,9 @@ public:
 	int8_t	    _expo;
     int16_t 	_adc_in;
 
+    int16_t     _dead_zone;
     float 		_expo_precalc;
     int16_t    	_adc_buffer;
-    int16_t     _dead_zone;
 
 
 private:

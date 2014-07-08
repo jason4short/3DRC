@@ -11,6 +11,16 @@
 #define ENABLE ENABLED
 #define DISABLE DISABLED
 
+
+
+
+#define ADC_AVR     1
+#define ADC_I2C     2
+
+
+#define APM_BOARD           1
+#define PRO_MINI_BOARD      2
+
 // used to debounce button input
 #define DEBOUNCER 400000
 
@@ -23,6 +33,10 @@
 #define CH_6 5
 #define CH_7 6
 #define CH_8 7
+
+// Analog pin 0 for gimbal control
+#define CH6_GIMBAL 0
+
 
 
 //EEPRROM
@@ -46,6 +60,9 @@
 #define EE_CH2_EXPO 0x1B
 #define EE_CH3_EXPO 0x1D
 #define EE_CH4_EXPO 0x1F
+
+#define EE_CH6_LOW 0x21
+#define EE_CH6_HIGH 0x23
 
 
 #define SW2 (1<<2)

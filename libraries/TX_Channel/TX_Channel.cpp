@@ -28,7 +28,7 @@
 void
 TX_Channel::zero_min_max()
 {
-    _adc_min = _adc_max = 900;
+    _adc_min = _adc_max = 600;
 }
 
 void
@@ -70,6 +70,8 @@ TX_Channel::get_PWM(bool use_trim)
 	float input;
 	if (!use_trim){
 		input = (float)(_adc_in - (_adc_min + _dead_zone)) / (float)((_adc_max-_dead_zone) - (_adc_min + _dead_zone));
+
+
 		input = pow(input, _expo_precalc);
 		input = max(input, 0);
 		input = min(input, 1);

@@ -47,12 +47,12 @@ void readCommands(void)
 
 					bytes_union.bytes[0] = cliSerial->read();
 					bytes_union.bytes[1] = cliSerial->read();
-					gimbal.sum = bytes_union.int_value;
+					tether_gimbal.sum = bytes_union.int_value;
 
-					//cliSerial->printf("!%d, %d, %d\n", tmp_roll, tmp_pitch, gimbal.sum);
-					if((tmp_roll + tmp_pitch) == gimbal.sum){
-						gimbal.roll = tmp_roll;
-						gimbal.pitch = tmp_pitch;
+					//cliSerial->printf("!%d, %d, %d\n", tmp_roll, tmp_pitch, tether_gimbal.sum);
+					if((tmp_roll + tmp_pitch) == tether_gimbal.sum){
+						tether_gimbal.roll = tmp_roll;
+						tether_gimbal.pitch = tmp_pitch;
 					}
 
 					step = 0;
