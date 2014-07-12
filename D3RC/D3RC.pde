@@ -84,7 +84,7 @@ static float preset_speed = 20;
 static float preset_A_value; // = 0
 static float preset_B_value = 90;
 
-static uint16 hold_timer;
+static uint16_t hold_timer;
 
 
 // used to enter CLI
