@@ -24,6 +24,27 @@
 #include "defines.h"
 
 
+#if BOARD_TYPE == PRO_MINI_BOARD
+    // Analog pin 0 for gimbal control
+    #define CH6_GIMBAL 0
+    #define SW2 (1<<2)
+    #define SW3 (1<<3)
+    #define SW4 (1<<4)
+    #define SW5 (1<<5)
+    #define SW6 (1<<6)
+    #define SW7 (1<<7)
+
+#elif BOARD_TYPE == APM_BOARD
+    // Analog pin 0 for gimbal control
+    #define CH6_GIMBAL 4
+    #define SW2 (1<<2)
+    #define SW3 (1<<3)
+    #define SW4 (1<<4)
+    #define SW5 (1<<5)
+    #define SW6 (1<<6)
+    #define SW7 (1<<7)
+#endif
+
 
 //////////////////////CONFIGURATION///////////////////////////////
 #define MAX_CHANNELS 8			//set the number of chanels
@@ -58,16 +79,6 @@
 
 
 
-#ifndef ADC_INPUT
- #define ADC_INPUT  ADC_AVR
- //#define ADC_INPUT    ADC_I2C
-#endif
-
-
-#ifndef BOARD_TYPE
- //#define BOARD_TYPE  APM_BOARD
- #define BOARD_TYPE    PRO_MINI_BOARD
-#endif
 
 
 

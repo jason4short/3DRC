@@ -64,69 +64,92 @@ TX_Channel::set_ADC(int16_t adc_input)
 	*/
 }
 
-int16_t
-TX_Channel::get_PWM(bool use_trim)
+float
+TX_Channel::get_PWM_angle(bool _raw)
 {
 	float input;
-	if (!use_trim){
-		input = (float)(_adc_in - (_adc_min + _dead_zone)) / (float)((_adc_max-_dead_zone) - (_adc_min + _dead_zone));
-
-
-		input = pow(input, _expo_precalc);
-		input = max(input, 0);
-		input = min(input, 1);
-		input *= 1000.0;
-
-		if(_reverse){
-			return 2000 - (int16_t)input;
-		}else{
-			return 1000 + (int16_t)input;
-		}
-	}
-
-	if(_adc_in >= _adc_trim){
-		input = (float)(_adc_in - _adc_trim) / (float)((_adc_max - _dead_zone) - _adc_trim);
+    float _adc_trim_high = _adc_trim + _dead_zone;
+    float _adc_trim_low  = _adc_trim - _dead_zone;
+		
+	if(_adc_in > _adc_trim_high){ // above dead_zone:
+        input = (_adc_in - _adc_trim_high) / (_adc_max - _adc_trim_high);
+        
+	}else if(_adc_in < _adc_trim_low){ // below dead_zone:
+        input = -(_adc_trim_low - _adc_in) / (_adc_trim_low - _adc_min);
+	
 	}else{
-		input = (float)(_adc_in - _adc_trim) / (float)(_adc_trim - (_adc_min + _dead_zone));
+	    input = 0;
+	
 	}
+	if(_reverse)
+	    input = -input;
+	    
 	input = max(input, -1);
 	input = min(input, 1);
-	//Serial.printf_P(PSTR("input %1.4f, %1.4f\n"), input, _expo_precalc);
-
+	
 
 	if(input < 0){
-		//input = -((-input)^_expo_precalc);
 		input = -(pow(-input, _expo_precalc));
-		if(_reverse){
-			return 1500 - (int16_t)(input * 500.0f);
-		}else{
-			return 1500 + (int16_t)(input * 500.0f);
-		}
-	}else{
-		//input = input^_expo_precalc;
+        if(_raw)
+            return input;
+        else
+    		return 1500 + (int16_t)(input * 500.0f);
+	}else if (input > 0){
 		input = pow(input, _expo_precalc);
-		//input *= 1000.0;
-
-		if(_reverse){
-			return 1500 - (int16_t)(input * 500.0f);
-		}else{
-			return 1500 + (int16_t)(input * 500.0f);
-		}
+        if(_raw)
+            return input;
+        else
+    		return 1500 + (int16_t)(input * 500.0f);
+	}else{
+        if(_raw)
+            return 0;
+        else
+    		return 1500;
 	}
+}
+
+int16_t
+TX_Channel::get_PWM_linear()
+{
+	float input;
+    // this is for linear inputs like throttle
+    input = (float)(_adc_in - (_adc_min + _dead_zone)) / (float)((_adc_max-_dead_zone) - (_adc_min + _dead_zone));
+
+
+    input = pow(input, _expo_precalc);
+    input = max(input, 0);
+    input = min(input, 1);
+    input *= 1000.0;
+
+    if(_reverse){
+        return 2000 - (int16_t)input;
+    }else{
+        return 1000 + (int16_t)input;
+    }
 }
 
 void
 TX_Channel::set_reverse(bool reverse)
 {
-    if (reverse) _reverse = -1;
-    else _reverse = 1;
+    _reverse = reverse;
 }
 
 bool
 TX_Channel::get_reverse(void)
 {
-    if (_reverse==-1) return 1;
-    else return 0;
+    return _reverse;
+}
+
+void
+TX_Channel::set_dead_zone(int16_t dead_zone)
+{
+    _dead_zone = dead_zone;
+}
+
+int16_t
+TX_Channel::get_dead_zone(void)
+{
+    return _dead_zone;
 }
 
 void

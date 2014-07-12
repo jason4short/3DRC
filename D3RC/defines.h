@@ -12,34 +12,6 @@
 #define DISABLE DISABLED
 
 
-
-
-#define ADC_AVR     1
-#define ADC_I2C     2
-
-
-#define APM_BOARD           1
-#define PRO_MINI_BOARD      2
-
-// used to debounce button input
-#define DEBOUNCER 400000
-
-
-#define CH_1 0
-#define CH_2 1
-#define CH_3 2
-#define CH_4 3
-#define CH_5 4
-#define CH_6 5
-#define CH_7 6
-#define CH_8 7
-
-// Analog pin 0 for gimbal control
-#define CH6_GIMBAL 0
-
-
-
-//EEPRROM
 #define EE_CH1_LOW 0x01
 #define EE_CH1_MID 0x03
 #define EE_CH1_HIGH 0x05
@@ -64,13 +36,45 @@
 #define EE_CH6_LOW 0x21
 #define EE_CH6_HIGH 0x23
 
+#define EE_CH1_REV 0x25
+#define EE_CH2_REV 0x26
+#define EE_CH3_REV 0x27
+#define EE_CH4_REV 0x28
+#define EE_CH5_REV 0x29
+#define EE_CH6_REV 0x2A
+#define EE_CH7_REV 0x2B
+#define EE_CH8_REV 0x2C
+#define EE_CH6_EXPO 0x2D
 
-#define SW2 (1<<2)
-#define SW3 (1<<3)
-#define SW4 (1<<4)
-#define SW5 (1<<5)
-#define SW6 (1<<6)
-#define SW7 (1<<7)
+
+
+#define ADC_AVR     1
+#define ADC_I2C     2
+
+
+#define APM_BOARD           1
+#define PRO_MINI_BOARD      2
+
+// used to debounce button input
+#define DEBOUNCER 400000
+
+
+#define CH_1 0
+#define CH_2 1
+#define CH_3 2
+#define CH_4 3
+#define CH_5 4
+#define CH_6 5
+#define CH_7 6
+#define CH_8 7
+
+
+
+#define preset_A_button 1
+#define preset_B_button 2
+
+
+
 
 
 

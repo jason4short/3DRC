@@ -8,7 +8,6 @@ static int8_t   main_menu_help(uint8_t argc, const Menu::arg *argv)
                          "  cal\n"
                          "  adc\n"
                          "  expo\n"
-                         "  tether\n"
                          "  show\n"
                          "  proto\n"
                          "  eedump\n"
@@ -22,7 +21,6 @@ static int8_t   test_ppm			(uint8_t argc, const Menu::arg *argv);         // in 
 static int8_t   test_adc			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_expo			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_show			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
-static int8_t   setup_tether		(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_cal_sticks		(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_eedump			(uint8_t argc, const Menu::arg *argv);
 static int8_t   test_proto		    (uint8_t argc, const Menu::arg *argv);
@@ -39,7 +37,6 @@ const struct Menu::command main_menu_commands[] PROGMEM = {
     {"cal",	        test_cal_sticks},
     {"adc",         test_adc},
     {"expo",        test_expo},
-    {"tether",      setup_tether},
     {"proto",       test_proto},
     {"show",        test_show},
     {"help",        main_menu_help},
@@ -67,9 +64,6 @@ test_show(uint8_t argc, const Menu::arg *argv)
     return(0);
 }
 
-
-
-
 static void
 trim_sticks()
 {
@@ -87,10 +81,17 @@ test_ch7(uint8_t argc, const Menu::arg *argv)
 
     while(1) {
         delay(20);
-        if(~PINB & 1){
+        readCH_7();
+        if(pwm_output[CH_7] == 2000){
             cliSerial->printf_P(PSTR("CH 7 high\n"));
         }else{
             cliSerial->printf_P(PSTR("CH 7 low\n"));
+        }
+        readCH_8();
+        if(pwm_output[CH_8] == 2000){
+            cliSerial->printf_P(PSTR("CH 8 high\n"));
+        }else{
+            cliSerial->printf_P(PSTR("CH 8 low\n"));
         }
 
         if(cliSerial->available() > 0) {
@@ -148,7 +149,7 @@ test_adc(uint8_t argc, const Menu::arg *argv)
         delay(20);
         read_adc();
 		update_sticks();
-		cliSerial->printf("%d, | %d, %d, %d, %d\n", adc_gimbal, adc_roll, adc_pitch, adc_throttle, adc_yaw);
+		cliSerial->printf("%d, | %d, %d, %d, %d | %d\n", adc_gimbal, adc_roll, adc_pitch, adc_throttle, adc_yaw, adc_gimbal);
 
         if(cliSerial->available() > 0) {
             delay(20);
@@ -170,7 +171,7 @@ test_expo(uint8_t argc, const Menu::arg *argv)
         return 0;
     }
 
-	uint8_t ch  = constrain(argv[1].i, 1, 4);
+	uint8_t ch  = constrain(argv[1].i, 1, 6);
 	uint8_t expo  = constrain(argv[2].i, 0, 100);
 
 
@@ -190,6 +191,10 @@ test_expo(uint8_t argc, const Menu::arg *argv)
 		case 4:
 		yaw.set_expo(expo);
     	eeprom_write_word((uint16_t *)	EE_CH4_EXPO,  	yaw.get_expo());
+		break;
+		case 6:
+		gimbal.set_expo(expo);
+    	eeprom_write_word((uint16_t *)	EE_CH6_EXPO,  	gimbal.get_expo());
 		break;
 	}
 
@@ -242,62 +247,6 @@ test_cal_sticks(uint8_t argc, const Menu::arg *argv)
     return 0;
 }
 
-static void
-save_eeprom(){
-	eeprom_write_word((uint16_t *)	EE_CH1_LOW,  	roll._adc_min);
-	eeprom_write_word((uint16_t *)	EE_CH1_MID,  	roll._adc_trim);
-	eeprom_write_word((uint16_t *)	EE_CH1_HIGH,  	roll._adc_max);
-
-	eeprom_write_word((uint16_t *)	EE_CH2_LOW,  	pitch._adc_min);
-	eeprom_write_word((uint16_t *)	EE_CH2_MID,  	pitch._adc_trim);
-	eeprom_write_word((uint16_t *)	EE_CH2_HIGH,  	pitch._adc_max);
-
-	eeprom_write_word((uint16_t *)	EE_CH3_LOW,  	throttle._adc_min);
-	eeprom_write_word((uint16_t *)	EE_CH3_MID,  	throttle._adc_trim);
-	eeprom_write_word((uint16_t *)	EE_CH3_HIGH,  	throttle._adc_max);
-
-	eeprom_write_word((uint16_t *)	EE_CH4_LOW,  	yaw._adc_min);
-	eeprom_write_word((uint16_t *)	EE_CH4_MID,  	yaw._adc_trim);
-	eeprom_write_word((uint16_t *)	EE_CH4_HIGH,  	yaw._adc_max);
-
-	eeprom_write_word((uint16_t *)	EE_CH1_EXPO,  	roll.get_expo());
-	eeprom_write_word((uint16_t *)	EE_CH2_EXPO,  	pitch.get_expo());
-	eeprom_write_word((uint16_t *)	EE_CH3_EXPO,  	throttle.get_expo());
-	eeprom_write_word((uint16_t *)	EE_CH4_EXPO,  	yaw.get_expo());
-
-	eeprom_write_word((uint16_t *)	EE_CH6_LOW,  	gimbal._adc_min);
-	eeprom_write_word((uint16_t *)	EE_CH6_HIGH,  	gimbal._adc_max);
-}
-
-
-static void
-load_eeprom(){
-	roll._adc_min	= eeprom_read_word((uint16_t *)	EE_CH1_LOW);
-	roll._adc_trim	= eeprom_read_word((uint16_t *)	EE_CH1_MID);
-	roll._adc_max	= eeprom_read_word((uint16_t *)	EE_CH1_HIGH);
-
-	pitch._adc_min	= eeprom_read_word((uint16_t *)	EE_CH2_LOW);
-	pitch._adc_trim	= eeprom_read_word((uint16_t *)	EE_CH2_MID);
-	pitch._adc_max	= eeprom_read_word((uint16_t *)	EE_CH2_HIGH);
-
-	throttle._adc_min	= eeprom_read_word((uint16_t *)	EE_CH3_LOW);
-	throttle._adc_trim	= eeprom_read_word((uint16_t *)	EE_CH3_MID);
-	throttle._adc_max	= eeprom_read_word((uint16_t *)	EE_CH3_HIGH);
-
-	yaw._adc_min	= eeprom_read_word((uint16_t *)	EE_CH4_LOW);
-	yaw._adc_trim	= eeprom_read_word((uint16_t *)	EE_CH4_MID);
-	yaw._adc_max	= eeprom_read_word((uint16_t *)	EE_CH4_HIGH);
-
-	roll.set_expo(eeprom_read_word((uint16_t *)		EE_CH1_EXPO));
-	pitch.set_expo(eeprom_read_word((uint16_t *)	EE_CH2_EXPO));
-	throttle.set_expo(eeprom_read_word((uint16_t *)	EE_CH3_EXPO));
-	yaw.set_expo(eeprom_read_word((uint16_t *)		EE_CH4_EXPO));
-
-	gimbal._adc_min	= eeprom_read_word((uint16_t *)	EE_CH6_LOW);
-	gimbal._adc_max	= eeprom_read_word((uint16_t *)	EE_CH6_HIGH);
-	gimbal._adc_trim	= (gimbal._adc_min + gimbal._adc_max)/2;
-}
-
 
 static void
 print_radio_cal()
@@ -308,8 +257,7 @@ print_radio_cal()
 	cliSerial->printf_P(PSTR("thr: %d\t%d\t%d\n"),throttle._adc_min,    	throttle._adc_trim, 	throttle._adc_max);
 	cliSerial->printf_P(PSTR("yaw: %d\t%d\t%d\n"),yaw._adc_min, 		    yaw._adc_trim, 			yaw._adc_max);
 	cliSerial->printf_P(PSTR("gimbal: %d\t%d\t%d\n"),gimbal._adc_min,  	    gimbal._adc_trim, 	    gimbal._adc_max);
-	cliSerial->printf_P(PSTR("expo: %d\t%d\t%d\t%d\n"),roll.get_expo(), 	pitch.get_expo(), 		throttle.get_expo(), yaw.get_expo());
-	cliSerial->printf_P(PSTR("expo: %d\t%d\t%d\t%d\n"),roll.get_expo(), 	pitch.get_expo(), 		throttle.get_expo(), yaw.get_expo());
+	cliSerial->printf_P(PSTR("expo: %d\t%d\t%d\t%d\t%d\n"),roll.get_expo(), 	pitch.get_expo(), 		throttle.get_expo(),  yaw.get_expo(),  gimbal.get_expo());
 
 }
 
@@ -329,7 +277,7 @@ test_ppm(uint8_t argc, const Menu::arg *argv)
         read_adc();
 		update_sticks();
 
-		cliSerial->printf("%d, %d, %d, %d | %d\n", pwm_output[CH_1], pwm_output[CH_2], pwm_output[CH_3], pwm_output[CH_4], pwm_output[CH_6]);
+		cliSerial->printf("%d, %d, %d, %d | %1.3f\n", pwm_output[CH_1], pwm_output[CH_2], pwm_output[CH_3], pwm_output[CH_4], input_rate);
 
         if(cliSerial->available() > 0) {
             delay(20);
@@ -416,20 +364,4 @@ static void zero_eeprom(void)
     }
 
     cliSerial->printf_P(PSTR("done\n"));
-}
-
-
-
-static int8_t
-setup_tether(uint8_t argc, const Menu::arg *argv)
-{
-    if (!strcmp_P(argv[1].str, PSTR("on"))) {
-		tether = true;
-	    cliSerial->printf_P(PSTR("\nTether on\n"));
-
-    }else{
-	    cliSerial->printf_P(PSTR("\nTether off\n"));
-		tether = false;
-    }
-    return 0;
 }

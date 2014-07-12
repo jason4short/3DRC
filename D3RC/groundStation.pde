@@ -1,10 +1,11 @@
 // Receive buffer
+/*
 static union {
 	//int32_t long_value;
 	int16_t int_value;
 	uint8_t bytes[];
 } bytes_union;
-
+*/
 
 //	memcpy(bytes_union.bytes, &buff[1], 2);
 //	wheel.left_distance += bytes_union.int_value;
@@ -34,6 +35,7 @@ void readCommands(void)
 
 			case 2:
 				if(cliSerial->available() >= 6){
+				    /*
 					int16_t tmp_roll, tmp_pitch;
 
 					bytes_union.bytes[0] = cliSerial->read();
@@ -47,14 +49,14 @@ void readCommands(void)
 
 					bytes_union.bytes[0] = cliSerial->read();
 					bytes_union.bytes[1] = cliSerial->read();
-					tether_gimbal.sum = bytes_union.int_value;
+					//tether_gimbal.sum = bytes_union.int_value;
 
 					//cliSerial->printf("!%d, %d, %d\n", tmp_roll, tmp_pitch, tether_gimbal.sum);
 					if((tmp_roll + tmp_pitch) == tether_gimbal.sum){
 						tether_gimbal.roll = tmp_roll;
 						tether_gimbal.pitch = tmp_pitch;
 					}
-
+                    */
 					step = 0;
 				}
 			break;

@@ -18,7 +18,7 @@ public:
     /// @param name     Optional name for the group.
     ///
     TX_Channel():
-    	_reverse(false),
+    	_reverse(1), // 1 = normal, -1 = reverse
     	_dead_zone(0),
     	_expo_precalc(1)
     {
@@ -35,12 +35,17 @@ public:
 
 	// returns the PWM output un microseconds
 	// calculates the expo
-    int16_t    	get_PWM(bool use_trim);
+    int16_t    	get_PWM_linear();
+    float    	get_PWM_angle(bool raw = false);
+    
     void    	set_ADC(int16_t adc_input);
 
     // setup the control preferences
     void       	set_reverse(bool reverse);
-    bool       	get_reverse(void);
+    bool        get_reverse(void);
+
+    void       	set_dead_zone(int16_t dead_zone);
+    int16_t     get_dead_zone(void);
 
     void       	set_expo(uint8_t expo);
     uint8_t    	get_expo(void);

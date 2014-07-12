@@ -18,6 +18,14 @@
 // Header includes
 ////////////////////////////////////////////////////////////////////////////////
 
+ #define ADC_INPUT  ADC_AVR
+ //#define ADC_INPUT    ADC_I2C
+
+
+ #define BOARD_TYPE  APM_BOARD
+ //#define BOARD_TYPE    PRO_MINI_BOARD
+
+
 #include <FastSerial.h>
 #include <AP_Common.h>
 #include <avr/eeprom.h>
@@ -38,6 +46,7 @@ Adafruit_ADS1015 ads;
 FastSerialPort0(Serial);
 static FastSerial *cliSerial = &Serial;
 
+float G_Dt;
 
 TX_Channel roll;
 TX_Channel pitch;
@@ -49,6 +58,35 @@ AC_PID  pid_pitch(RATE_ROLL_P,		RATE_ROLL_I,		RATE_ROLL_D,		RATE_ROLL_IMAX);
 AC_PID  pid_roll(RATE_ROLL_P,		RATE_ROLL_I,		RATE_ROLL_D,		RATE_ROLL_IMAX);
 
 
+// Camera Control
+// --------------------------
+static uint32_t gimbal_timer;
+static float camera_angle;        
+static float camera_accel = 1;
+static float camera_rate;
+static float camera_rate_old;
+static float input_rate;
+
+static float MAX_ANGLE = 90;
+static float MIN_ANGLE;
+static float MAX_SPEED = 20;
+
+    
+// Presets
+// --------------------------
+static bool do_preset;
+static float preset_target;
+static float preset_time;
+static float preset_start;
+static float preset_change;
+static float preset_duration;
+static float preset_speed = 20;
+static float preset_A_value; // = 0
+static float preset_B_value = 90;
+
+static uint16 hold_timer;
+
+
 // used to enter CLI
 static uint8_t	crlf_count;
 
@@ -56,48 +94,29 @@ static uint8_t	crlf_count;
 // Radio globals
 // -------------------------------------------
 
-uint8_t current_mode;
-bool mode_change_flag;
-int16_t mode_pwm[] = {1100, 1300, 1400, 1500, 1680, 1900};
+static uint8_t current_mode;
+static uint8_t current_preset_button;
+
+static bool mode_change_flag;
+static bool preset_change_flag;
+
+static int16_t mode_pwm[] = {1100, 1300, 1400, 1500, 1680, 1900};
 
 
+#if ADC_INPUT == ADC_I2C
 // filters for 200hz reading
-int16_t filter1[] = {0, 0, 0, 0};
-int16_t filter2[] = {0, 0, 0, 0};
-int16_t filter3[] = {0, 0, 0, 0};
-int16_t filter4[] = {0, 0, 0, 0};
-uint8_t pointer;
-
+static int16_t filter1[] = {0, 0, 0, 0};
+static int16_t filter2[] = {0, 0, 0, 0};
+static int16_t filter3[] = {0, 0, 0, 0};
+static int16_t filter4[] = {0, 0, 0, 0};
+static uint8_t pointer;
+#endif
 
 // final reading of stick input
 int16_t adc_roll, adc_pitch, adc_throttle, adc_yaw, adc_gimbal;
 int16_t pwm_output[8];
 
 volatile bool RC_flag;
-
-struct Tether_gimbal {
-	uint8_t head1;
-	uint8_t head2;
-	int16_t roll;
-	int16_t pitch;
-	int16_t sum;
-};
-
-static struct {
-	int16_t roll;
-	int16_t pitch;
-	int16_t sum;
-} tether_gimbal;
-
-
-// -------------------------------------------
-// Tether globals
-// -------------------------------------------
-
-bool tether = false;
-bool tetherGo = false;
-
-
 
 // -------------------------------------------
 // system globals
@@ -106,6 +125,8 @@ bool tetherGo = false;
 // Time in microseconds of main control loop
 static uint8_t counter_one_herz;
 static uint32_t fast_loopTimer;
+static uint32_t fast_loopTimer2;
+
 // used to debounce button presses
 static uint32_t bounce;
 
@@ -120,14 +141,15 @@ void setup()
     cliSerial->println_P(msg);
 
 	init_arduRC();
+	init_settings();
 
     //delay(500);
     cliSerial->printf_P(PSTR("Begin\n"));
 
-	if(~PIND & SW3){
+	/*if(~PIND & SW3){
 	    tether = true;
     	cliSerial->printf_P(PSTR("Tether ON\n"));
-	}
+	}*/
 }
 
 
@@ -137,7 +159,11 @@ void loop()
 	uint32_t timer = micros();
 	// 1,000,000 / 5,000 = 200hz
 	// 1,000,000 / 20,000 = 50hz
+		
 	if((timer - fast_loopTimer) >= 20000){
+        //G_Dt = (float)(timer - fast_loopTimer2) / 1000000.f;                  // used by PI Loops
+        //fast_loopTimer2 = timer;
+
 		fast_loopTimer = timer;
 		read_adc();
 	}
@@ -157,22 +183,16 @@ void loop()
 
 	// updated at 50hz by internal timers
 	if(RC_flag){
+	    gimbal_timer++;
 		RC_flag = false;
 
-        // IS CH 7 high?
-        if(~PINB & 1){
-        	pwm_output[CH_7] = 1000;
-        }else{
-        	pwm_output[CH_7] = 2000;
-        }
-
-		// tether
-		if(tether && tetherGo){
-			update_tether();
-		}else{
-			update_sticks();
-		}
-
+        update_sticks();
+        readCH_5();
+        readCH_7();
+        readCH_8();
+        read_Presets();
+        gimbal_run();
+        
 		counter_one_herz++;
 
 		if(counter_one_herz == 50){
@@ -187,12 +207,7 @@ void loop()
 		if((timer - bounce) > DEBOUNCER){
 			bounce = timer;
     		//cliSerial->printf_P(PSTR("CH7 %d\n"), pwm_output[CH_7]);
-
-			if(tether){
-				update_tether_options();
-			}else{
-				update_control_mode();
-			}
+			update_control_mode();
 		}
 	}
 }
@@ -240,7 +255,7 @@ cli_update()
     Serial.printf("expo %d, %1.4f\n", (int16_t)roll._expo, roll._expo_precalc);
 
 	for(uint16_t i = 0; i <= 4000; i += 20){
-		pwm_out = roll.get_PWM(i, true);
+		pwm_out = roll.get_PWM_angle(i, true);
 		delay(5);
 		cliSerial->printf("%d, %d\n", i, pwm_out);
 	}

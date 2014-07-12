@@ -2,41 +2,150 @@
 #if BOARD_TYPE == APM_BOARD
 
 #define PPM_OUT_PIN 12			//set PPM signal output pin on the arduino
+#define CH_7_PIN 45			//set PPM signal output pin on the arduino
+#define CH_8_PIN 44			//set PPM signal output pin on the arduino
 
 void init_arduRC()
 {
-	pinMode(12,OUTPUT); // PB5 - PCINT5		- SCK		- Yellow LED pin   					- INPUT Throttle
-
 	// PORTD
 	//  				// PD0 - PCINT16	- RXD  		- Serial RX
 	//  				// PD1 - PCINT17	- TXD  		- Serial TX
-	//pinMode(2,INPUT);	// PD2 - PCINT18	- INT0 		- Rudder in							- INPUT Rudder/Aileron
-	//pinMode(3,INPUT);	// PD3 - PCINT19 	- INT1 		- Elevator in 						- INPUT Elevator
-	//pinMode(4,INPUT);	// PD4 - PCINT20	- XCK/T0 	- MUX pin							- Connected to Pin 2 on ATtiny
-	//pinMode(5,INPUT);	// PD5 - PCINT21	- OC0B/T1	- Mode pin							- Connected to Pin 6 on ATtiny   - Select on MUX
-	//pinMode(6,INPUT);	// PD6 - PCINT22 	- AIN0		- Ground start signaling Pin
-	//pinMode(7,INPUT);	// PD7 - PCINT23	- AIN1		- GPS Mux pin
+	//pinMode(2,INPUT);	// PD2 - PCINT18	- INT0 		- 
+	//pinMode(3,INPUT);	// PD3 - PCINT19 	- INT1 		- 
+	//pinMode(4,INPUT);	// PD4 - PCINT20	- XCK/T0 	- 
+	//pinMode(5,INPUT);	// PD5 - PCINT21	- OC0B/T1	- 
+	//pinMode(6,INPUT);	// PD6 - PCINT22 	- AIN0		- 
+	//pinMode(7,INPUT);	// PD7 - PCINT23	- AIN1		- 
+
+	// PORTA
+	/*
+	pinMode(22,INPUT);  // PA0 - AD0                - 
+	pinMode(23,OUTPUT);	// PA1 - AD1                -
+	pinMode(24,OUTPUT);	// PA2 - AD2                -
+	pinMode(25,OUTPUT); // PA3 - AD3                - HAL_GPIO_C_LED_PIN
+	pinMode(26,OUTPUT); // PA4 - AD4                - HAL_GPIO_B_LED_PIN
+	pinMode(27,OUTPUT); // PA5 - AD5                - HAL_GPIO_A_LED_PIN
+	pinMode(28,OUTPUT); // PA6 - AD6                -
+	pinMode(29,OUTPUT); // PA7 - AD7                -
+	*/
 
 	// PORTB
 	/*
-	pinMode(8, INPUT); // PB0 - PCINT0		- ICP1 		- Servo throttle					- OUTPUT THROTTLE
-	pinMode(9, OUTPUT);	// PB1 - PCINT1		- OC1A 		- Elevator PWM out					- Elevator PWM out
-	pinMode(10,OUTPUT);	// PB2 - PCINT2		- OC1B		- Rudder PWM out					- Aileron PWM out
-	pinMode(11,OUTPUT); // PB3 - PCINT3		- MOSI/OC2	-
-	pinMode(12,OUTPUT); // PB4 - PCINT4		- MISO		- Blue LED pin  - GPS Lock			- GPS Lock
-	pinMode(13,OUTPUT); // PB5 - PCINT5		- SCK		- Yellow LED pin   					- INPUT Throttle
+	pinMode(53, INPUT); // PB0 (SS/PCINT0)          - SPI_SS
+	pinMode(52,OUTPUT); // PB1 (SCK/PCINT1) 		- SPI_SCK
+	pinMode(51,OUTPUT);	// PB2 (MOSI/PCINT2)		- SPI_MOSI
+	pinMode(50,OUTPUT); // PB3 (MISO/PCINT3)	    - SPI_MISO
+	pinMode(10,OUTPUT); // PB4 (OC2A/PCINT4)		- PWM10
+	pinMode(11,OUTPUT); // PB5 (OC1A/PCINT5)		- PWM11         CH_2
+	pinMode(12,OUTPUT); // PB6 (OC1B/PCINT6)        - PWM12,        CH_1
+	pinMode(13,OUTPUT); // PB7 (OC0A/OC1C/PCINT7)   - PWM13
 	*/
 
 	// PORTC
 	/*
-	pinMode(8, INPUT); // PB0 - PCINT0		- ICP1 		- Servo throttle					- OUTPUT THROTTLE
-	pinMode(9, OUTPUT);	// PB1 - PCINT1		- OC1A 		- Elevator PWM out					- Elevator PWM out
-	pinMode(10,OUTPUT);	// PB2 - PCINT2		- OC1B		- Rudder PWM out					- Aileron PWM out
-	pinMode(11,OUTPUT); // PB3 - PCINT3		- MOSI/OC2	-
-	pinMode(12,OUTPUT); // PB4 - PCINT4		- MISO		- Blue LED pin  - GPS Lock			- GPS Lock
-	pinMode(13,OUTPUT); // PB5 - PCINT5		- SCK		- Yellow LED pin   					- INPUT Throttle
+	pinMode(37,INPUT);  // PC0 - A8		- 
+	pinMode(36,OUTPUT); // PC1 - A9		- 
+	pinMode(35,OUTPUT);	// PC2 - A10	- 
+	pinMode(34,OUTPUT); // PC3 - A11	
+	pinMode(33,OUTPUT); // PC4 - A12	
+	pinMode(32,OUTPUT); // PC5 - A13	
+	pinMode(31,OUTPUT); // PC6 - A14	
+	pinMode(30,OUTPUT); // PC7 - A15	
     */
 
+	// PORTD
+	/*
+	pinMode(21,INPUT);  // PD0 (SCL/INT0) 		    - I2C_SCL
+	pinMode(20,OUTPUT); // PD1 (SDA/INT1)		    - I2C_SDA
+	pinMode(19,OUTPUT);	// PD2 (RXDI/INT2)	        - USART1_RX
+	pinMode(18,OUTPUT); // PD3 (TXD1/INT3)          - USART1_TX
+	pinMode(--,OUTPUT); // PD4 (ICP1)               - 
+	pinMode(--,OUTPUT); // PD5 (XCK1)		        - 
+	pinMode(--,OUTPUT); // PD6 (T1)		            - 
+	pinMode(38,OUTPUT); // PD7 (T0)		            - 
+    */
+
+	// PORTE
+	/*
+	pinMode(0, INPUT);  // PE0 (RXD0/PCINT8)		- USART0_RX
+	pinMode(1, OUTPUT);	// PE1 (TXD0)	            - USART0_TX
+	pinMode(--,OUTPUT);	// PE2 (XCK0/AIN0)	        - 
+	pinMode(5, OUTPUT); // PE3 (OC3A/AIN1)	        - PWM5          CH_8
+	pinMode(2, OUTPUT); // PE4 (OC3B/INT4)	        - PWM2          CH_7
+	pinMode(3, OUTPUT); // PE5 (OC3C/INT5)	        - PWM3          CH_6
+	pinMode(--,OUTPUT); // PE6 (T3/INT6)	        - APM only
+	pinMode(--,OUTPUT); // PE7 (CLKO/ICP3/INT7)		-
+    */
+
+	// PORTF
+	/*
+	pinMode(--,INPUT);  // PF0 (ADC0)               - Analog 0
+	pinMode(--,OUTPUT);	// PF1 (ADC1)               - Analog 1
+	pinMode(--,OUTPUT);	// PF2 (ADC2)               - Analog 2
+	pinMode(--,OUTPUT); // PF3 (ADC3)               - Analog 3
+	pinMode(--,OUTPUT); // PF4 (ADC4/TCK)           - Analog 4
+	pinMode(--,OUTPUT); // PF5 (ADC5/TMS)           - Analog 5
+	pinMode(--,OUTPUT); // PF6 (ADC6/TDO)           - Analog 6
+	pinMode(--,OUTPUT); // PF7 (ADC7/TDI)           - Analog 7
+    */
+
+	// PORTG
+	/*
+	pinMode(41,INPUT);  // PG0 (WR)
+	pinMode(40,OUTPUT); // PG1 (RD)
+	pinMode(39,OUTPUT);	// PG2 (ALE)
+	pinMode(--,OUTPUT); // PG3 (TOSC2)
+	pinMode(--,OUTPUT); // PG4 (TOSC1)
+	pinMode(4, OUTPUT); // PG5 (OC0B)               - PWM4
+    */
+
+	// PORTH
+	/*
+	pinMode(17,INPUT);  // PH0 (RXD2)               - USART2_RX
+	pinMode(16,OUTPUT); // PH1 (TXD2)               - USART2_TX
+	pinMode(--,OUTPUT);	// PH2 (XCK2)
+	pinMode(6, OUTPUT); // PH3 (OC4A)               - PWM6          CH_5
+	pinMode(7, OUTPUT); // PH4 (OC4B)               - PWM7          CH_4
+	pinMode(8, OUTPUT); // PH5 (OC4C)               - PWM8          CH_3
+	pinMode(9, OUTPUT); // PH6 (OC2B)               - PWM9          
+	pinMode(--,OUTPUT); // PH7 (T4)                 - 
+    */
+
+	// PORTJ
+	/*
+	pinMode(15,INPUT);  // PJ0 (RXD3/PCINT9)        - USART3_RX
+	pinMode(14,OUTPUT); // PJ1 (TXD3/PCINT10)       - USART3_TX
+	pinMode(--,OUTPUT);	// PJ2 (XCK3/PCINT11)       - 
+	pinMode(--,OUTPUT); // PJ3 (PCINT12)            - PWM6
+	pinMode(--,OUTPUT); // PJ4 (PCINT13)            - PWM7
+	pinMode(--,OUTPUT); // PJ5 (PCINT14)            - PWM8
+	pinMode(--,OUTPUT); // PJ6 (PCINT15)            - PWM9
+	pinMode(--,OUTPUT); // PJ7              - 
+    */
+
+	// PORTK
+	/*
+	pinMode(--,INPUT);  // PK0 (ADC8/PCINT16)       - Analog 8
+	pinMode(--,OUTPUT); // PK1 (ADC9/PCINT17)       - Analog 9
+	pinMode(--,OUTPUT);	// PK2 (ADC10/PCINT18)      - Analog 10
+	pinMode(--,OUTPUT); // PK3 (ADC11/PCINT19)      - Analog 11
+	pinMode(--,OUTPUT); // PK4 (ADC12/PCINT20)      - Analog 12
+	pinMode(--,OUTPUT); // PK5 (ADC13/PCINT21)      - Analog 13
+	pinMode(--,OUTPUT); // PK6 (ADC14/PCINT22)      - Analog 14
+	pinMode(--,OUTPUT); // PK7 (ADC15/PCINT23)      - Analog 15
+    */
+
+	// PORTL
+	/*
+	pinMode(49,INPUT);  // PL0 (ICP4)               -
+	pinMode(48,OUTPUT); // PL1 (ICP5)               -
+	pinMode(47,OUTPUT);	// PL2 (T5)                 -
+	pinMode(46,OUTPUT); // PL3 (OC5A)               -
+	pinMode(45,OUTPUT); // PL4 (OC5B)               - CH_10 (on analog side)
+	pinMode(44,OUTPUT); // PL5 (OC5C)               - CH_11 (on analog side)
+	pinMode(43,OUTPUT); // PL6 
+	pinMode(42,OUTPUT); // PL7 
+    */
 
 	// turn on internal pullup resistors
 	//digitalWrite(2, HIGH);
@@ -54,74 +163,40 @@ void init_arduRC()
 	pinMode(PPM_OUT_PIN, OUTPUT);
 	digitalWrite(PPM_OUT_PIN, !POLARITY);	// set the PPM signal pin to the default state (off)
 
- 	// ATMEGA ADC
- 	// PC0 - ADC0 	- PCINT8
- 	// PC1 - ADC1 	- PCINT9
- 	// PC2 - ADC2 	- PCINT10
- 	// PC3 - ADC3 	- PCINT11
- 	// PC4 - ADC4 	- PCINT12	- SDA
- 	// PC5 - ADC5 	- PCINT13	- SCL
- 	// PC6 - ADC5 	- PCINT14 - reset
 
+    //CH 7, Ch 8                                 // on APM
+	pinMode(CH_7_PIN,INPUT); // PL4 (OC5B)       - CH_10 (on analog side)
+	pinMode(CH_8_PIN,INPUT); // PL5 (OC5C)       - CH_11 (on analog side)
+	// turn on internal pullup resistors
+	digitalWrite(CH_7_PIN, HIGH);
+	digitalWrite(CH_8_PIN, HIGH);
+	
+	//CH5
+	pinMode(11,INPUT); // PB5 (OC1A/PCINT5)	        - PWM11         CH_2 - takeoff
+	pinMode(8, INPUT); // PH5 (OC4C)                - PWM8          CH_3
+	pinMode(7, INPUT); // PH4 (OC4B)                - PWM7          CH_4
+	pinMode(6, INPUT); // PH3 (OC4A)               - PWM6           CH_5
+	pinMode(3, INPUT); // PE5 (OC3C/INT5)	        - PWM3          CH_6
+	pinMode(2, INPUT); // PE4 (OC3B/INT4)	        - PWM2          CH_7
+	//pinMode(5, INPUT); // PE3 (OC3A/AIN1)	        - PWM5          CH_8
+	//pinMode(13,INPUT); // PB7 (OC0A/OC1C/PCINT7)   - PWM13
+
+	// turn on internal pullup resistors
+	digitalWrite(11, HIGH);
+	digitalWrite(8, HIGH);
+	digitalWrite(7, HIGH);
+	digitalWrite(6, HIGH);
+	digitalWrite(3, HIGH);
+	digitalWrite(2, HIGH);
+	//digitalWrite(13, HIGH);
 
 	// ---------------------------------------------------------
-
-
-
-
 	// set Analog out 4 to output
 	//DDRC |= B00010000;
 
-
-	// setup expo
-	//roll.set_expo(50);
-	//pitch.set_expo(50);
-	//yaw.set_expo(50);
-	//throttle.set_expo(0);
-
-
-	// The ADC input range (or gain) can be changed via the following
-	// functions, but be careful never to exceed VDD +0.3V max, or to
-	// exceed the upper and lower limits if you adjust the input range!
-	// Setting these values incorrectly may destroy your ADC!
-
-	//ads.begin();
-	//                                                                ADS1015  ADS1115
-	//                                                                -------  -------
-	//ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
-	//ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
-	// ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
-	// ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
-	// ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
-	// ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
-
-
-	pwm_output[CH_1] = 1500;
-	pwm_output[CH_2] = 1500;
-	pwm_output[CH_3] = 1000;
-	pwm_output[CH_4] = 1500;
-	pwm_output[CH_5] = 1500;
-	pwm_output[CH_6] = 1500;
-	pwm_output[CH_7] = 1500;
-	pwm_output[CH_8] = 1500;
-
-
-    ///*
-	//cli();
-
-	// PCIE0 : PCINT  7..0
-	// PCIE1 : PCINT 14..8
-	// PCIE2 : PCINT 23..16
-
-	// ---------------------------------------------------------
-	// enable pin change interrupts
-	PCICR = _BV(PCIE2); // | _BV(PCIE2);
-
-	// enable in change interrupt on PB5 (digital pin 13)
-	//PCMSK0 = _BV(PCINT3) | _BV(PCINT5);
-
-	// enable pin change interrupt on
-	PCMSK2 = _BV(PCINT18) | _BV(PCINT19) | _BV(PCINT20) | _BV(PCINT21) | _BV(PCINT22) | _BV(PCINT23);
+	cli();
+    // Timers
+    // ========================
 
 	// Configure timer 1 for CTC mode
 	// Set Prescaler to 8
@@ -132,28 +207,116 @@ void init_arduRC()
 	// look for an overflow interrupt every 22.5ms
 	// Enable CTC interrupts whenever we match our CTC
 	TIMSK1 |= _BV(OCIE1A);
-    cliSerial->printf_P(PSTR("$\n"));
+    //cliSerial->printf_P(PSTR("$\n"));
 
 	// Set initial compare value to trigger interrupt
 	OCR1A = 100;
+
+
 	sei();
-
-    // Setup Dead Zone
-	gimbal._dead_zone = 0;
-	throttle._dead_zone = 90;
-	
-    // Setup Channel directions
-	throttle.set_reverse(true);
-	roll.set_reverse(false);
-	yaw.set_reverse(false);
-    
-    load_eeprom();
-	print_radio_cal();
-
-
-	// sets us to position 0 of 5 which is Stabilize on most setups
-	current_mode = 0;
-	update_control_mode();
+    // ========================
 }
+
+
+// radio PWM input timers
+static void
+readCH_5()
+{
+    uint8_t temp_mode = current_mode;
+
+	if(~PINB & SW5){
+		temp_mode = 0;
+		cliSerial->printf_P(PSTR("0\n"));
+		
+	}else if(~PINH & SW5){
+		temp_mode = 2;
+		cliSerial->printf_P(PSTR("2\n"));
+		
+	}else if(~PINH & SW4){
+		temp_mode = 3;
+		cliSerial->printf_P(PSTR("3\n"));
+		
+	}else if(~PINH & SW3){
+		temp_mode = 1;
+		cliSerial->printf_P(PSTR("1\n"));
+	}
+	
+    if(temp_mode != current_mode){
+        current_mode = temp_mode;
+		mode_change_flag = 1;
+	}
+}
+
+	
+static void
+readCH_7()
+{
+    // IS CH 7 high?
+    //if(~PINB & 1){
+	if(~PINE & SW5){
+		//cliSerial->printf_P(PSTR("X\n"));
+        pwm_output[CH_7] = 2000;
+    }else{
+        pwm_output[CH_7] = 1000;
+    }
+}
+
+static void
+readCH_8()
+{
+    // IS CH 8 high?
+	if(~PINE & SW4){
+		//cliSerial->printf_P(PSTR("Y\n"));
+        pwm_output[CH_8] = 2000;
+    }else{
+        pwm_output[CH_8] = 1000;
+    }
+}
+
+static bool preset_isPressed;
+static void
+read_Presets()
+{
+    uint8_t temp;
+
+	if(~PINL & SW5){
+		temp = preset_A_button;
+		//cliSerial->printf_P(PSTR("in A\n"));
+		
+	}else if(~PINL & SW4){
+		temp = preset_B_button;
+		//cliSerial->printf_P(PSTR("in B\n"));
+	}
+	
+	if(temp > 0 && preset_isPressed == false){
+	    // this is a change
+	    preset_isPressed = true;
+	    // restart the hold timer
+	    hold_timer = gimbal_timer;
+	    
+	}else if(temp == 0){
+	    preset_isPressed = false;
+	    // reset the hold timer
+	    hold_timer = 0;
+	}
+	
+	// are we pressing & holding a button?
+	if(hold_timer != 0 && (gimbal_timer - hold_timer) > 100){
+	    // save preset angle
+	    if(temp == preset_A_button){
+	        preset_A_value = camera_angle; 
+	    }else if (temp == preset_B_button){
+	        preset_B_value = camera_angle; 
+	    }
+	    hold_timer = 0;
+	}
+	
+    if(preset_isPressed && temp != current_preset_button){
+		//cliSerial->printf_P(PSTR("new Butt!\n"));
+        current_preset_button = temp;
+		preset_change_flag = 1;
+	}
+}
+
 
 #endif

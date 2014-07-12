@@ -1,4 +1,54 @@
+static void
+init_settings()
+{
+    #if ADC_INPUT == ADC_I2C
 
+        ads.begin();
+        //                                                                ADS1015  ADS1115
+        //                                                                -------  -------
+        ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
+        //ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
+        // ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
+        // ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
+        // ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
+        // ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
+    #endif
+
+	pwm_output[CH_1] = 1500;
+	pwm_output[CH_2] = 1500;
+	pwm_output[CH_3] = 1000;
+	pwm_output[CH_4] = 1500;
+	pwm_output[CH_5] = 1500;
+	pwm_output[CH_6] = 1500;
+	pwm_output[CH_7] = 1500;
+	pwm_output[CH_8] = 1500;
+
+    // Setup Dead Zone
+	roll.set_dead_zone(20);
+	pitch.set_dead_zone(20);
+	throttle.set_dead_zone(10);
+	yaw.set_dead_zone(20);
+	gimbal.set_dead_zone(100);
+	
+    
+    load_eeprom();
+	print_radio_cal();
+
+
+    // Setup Channel directions
+	throttle.set_reverse(false);
+	roll.set_reverse(false);
+	pitch.set_reverse(false);
+	yaw.set_reverse(true);
+	gimbal.set_reverse(false);
+
+
+
+    
+	// sets us to position 0 of 5 which is Stabilize on most setups
+	current_mode = 0;
+	update_control_mode();
+}
 
 static void
 update_control_mode()
@@ -9,68 +59,10 @@ update_control_mode()
     // PWM is mapped to mode_pwm's preset values
 	pwm_output[CH_5] = mode_pwm[current_mode];
 
-	//cliSerial->printf_P(PSTR("PWM Out %d\n"), pwm_output[CH_5]);
+	cliSerial->printf_P(PSTR("PWM Out %d\n"), pwm_output[CH_5]);
 }
 
 
-
-static void
-update_tether_options()
-{
-	float temp;
-
-    // we are always in stabilize!
-	pwm_output[CH_5] = mode_pwm[0];
-
-	switch(current_mode){
-
-		case 0: // stabilize
-			tetherGo = false;
-			//cliSerial->printf_P(PSTR("OFF\n"));
-		break;
-
-		case 1:
-			//cliSerial->printf_P(PSTR("P-\n"));
-			// decrease P
-			temp = pid_roll.kP() - .005;
-			temp = max(temp, 0);
-	        pid_roll.kP(temp);
-	        pid_pitch.kP(temp);
-		break;
-
-		case 2:
-			//cliSerial->printf_P(PSTR("D-\n"));
-			// decrease D
-			temp = pid_roll.kD() - .001;
-			temp = max(temp, 0);
-	        pid_roll.kD(temp);
-	        pid_pitch.kD(temp);
-		break;
-
-		case 3:
-			tetherGo = true;
-			//cliSerial->printf_P(PSTR("ON\n"));
-		break;
-
-		case 4:
-			//cliSerial->printf_P(PSTR("P+ %1.4f\n"), pid_roll.kP().get());
-			temp = pid_roll.kP() + .005;
-			temp = max(temp, 0);
-	        pid_roll.kP(temp);
-	        pid_pitch.kP(temp);
-		break;
-
-		case 5:
-			// increase D
-			//cliSerial->printf_P(PSTR("D+\n"));
-			temp = pid_roll.kD() + .001;
-			temp = max(temp, 0);
-	        pid_roll.kD(temp);
-	        pid_pitch.kD(temp);
-		break;
-
-	}
-}
 
 // PPM Timer code
 
@@ -126,47 +118,6 @@ ISR(TIMER1_COMPA_vect)
 }
 
 
-
-// radio PWM input timers
-ISR(PCINT2_vect) {
-
-	if(~PIND & SW3){
-		current_mode = 0;
-		mode_change_flag = 1;
-		//cliSerial->printf_P(PSTR("3\n"));
-	}
-	if(~PIND & SW2){
-		current_mode = 1;
-		mode_change_flag = 1;
-		//cliSerial->printf_P(PSTR("2\n"));
-	}
-	if(~PIND & SW4){
-		current_mode = 2;
-		mode_change_flag = 1;
-		//cliSerial->printf_P(PSTR("4\n"));
-	}
-	if(~PIND & SW6){
-		current_mode = 3;
-		mode_change_flag = 1;
-	    //cliSerial->printf_P(PSTR("6\n"));
-	}
-	if(~PIND & SW5){
-		current_mode = 4;
-		mode_change_flag = 1;
-		//cliSerial->printf_P(PSTR("5\n"));
-	}
-	if(~PIND & SW7){
-		current_mode = 5;
-		mode_change_flag = 1;
-		//cliSerial->printf_P(PSTR("7\n"));
-	}
-}
-
-ISR(PCINT0_vect)
-{
-	//if(PINB & 8)   // pin 11
-	//if(PINB & 32)  // pin 13
-}
 
 
 
