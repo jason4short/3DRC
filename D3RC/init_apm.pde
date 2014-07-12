@@ -304,9 +304,12 @@ read_Presets()
 	if(hold_timer != 0 && (gimbal_timer - hold_timer) > 100){
 	    // save preset angle
 	    if(temp == preset_A_button){
-	        preset_A_value = camera_angle; 
+	        preset_A_value = camera_angle;
+        	eeprom_write_byte((uint8_t *)	EE_PRESET_A,  	(uint8_t)preset_A_value);
+
 	    }else if (temp == preset_B_button){
 	        preset_B_value = camera_angle; 
+        	eeprom_write_byte((uint8_t *)	EE_PRESET_B,  	(uint8_t)preset_B_value);
 	    }
 	    hold_timer = 0;
 	}

@@ -7,6 +7,7 @@ static int8_t   main_menu_help(uint8_t argc, const Menu::arg *argv)
                          "  ppm\n"
                          "  cal\n"
                          "  adc\n"
+                         "  swop\n"
                          "  expo\n"
                          "  show\n"
                          "  proto\n"
@@ -20,10 +21,10 @@ static int8_t   main_menu_help(uint8_t argc, const Menu::arg *argv)
 static int8_t   test_ppm			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_adc			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_expo			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
+static int8_t   test_swop			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_show			(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_cal_sticks		(uint8_t argc, const Menu::arg *argv);         // in test.cpp
 static int8_t   test_eedump			(uint8_t argc, const Menu::arg *argv);
-static int8_t   test_proto		    (uint8_t argc, const Menu::arg *argv);
 static int8_t   setup_erase         (uint8_t argc, const Menu::arg *argv);
 static int8_t   test_ch7            (uint8_t argc, const Menu::arg *argv);
 
@@ -37,7 +38,7 @@ const struct Menu::command main_menu_commands[] PROGMEM = {
     {"cal",	        test_cal_sticks},
     {"adc",         test_adc},
     {"expo",        test_expo},
-    {"proto",       test_proto},
+    {"swop",        test_swop},
     {"show",        test_show},
     {"help",        main_menu_help},
     {"eedump",      test_eedump},
@@ -107,40 +108,6 @@ test_ch7(uint8_t argc, const Menu::arg *argv)
 
 
 static int8_t
-test_proto(uint8_t argc, const Menu::arg *argv)
-{
-	/*
-    cliSerial->printf_P(PSTR("Test Protocol\n"));
-	int16_t tmp_roll, tmp_pitch;
-
-
-	_buffer.tether_gimbal.roll = 4500;
-	_buffer.tether_gimbal.pitch = -1200;
-	_buffer.tether_gimbal.sum = _buffer.tether_gimbal.pitch + _buffer.tether_gimbal.roll;
-
-
-	bytes_union.bytes[1] = _buffer.bytes[3];
-	bytes_union.bytes[0] = _buffer.bytes[2];
-	tmp_roll = bytes_union.int_value;
-
-
-	bytes_union.bytes[1] = _buffer.bytes[5];
-	bytes_union.bytes[0] = _buffer.bytes[4];
-	tmp_pitch = bytes_union.int_value;
-
-
-	bytes_union.bytes[1] = _buffer.bytes[7];
-	bytes_union.bytes[0] = _buffer.bytes[6];
-	tether_gimbal.sum = bytes_union.int_value;
-
-	cliSerial->printf("%d, %d, %d\n", tmp_roll, tmp_pitch, tether_gimbal.sum);
-	*/
-    return 0;
-}
-//*/
-
-
-static int8_t
 test_adc(uint8_t argc, const Menu::arg *argv)
 {
     cliSerial->printf_P(PSTR("Test ADC\n"));
@@ -162,12 +129,32 @@ test_adc(uint8_t argc, const Menu::arg *argv)
     return 0;
 }
 
+
+
+static int8_t
+test_swop(uint8_t argc, const Menu::arg *argv)
+{
+    if(argc!=2){
+        cliSerial->printf_P(PSTR("Usage: swop 1(on) : 0(off)\n"));
+        return 0;
+    }
+    
+    if(argv[1].i == 0){
+        swop_yaw = false;
+    }else{
+        swop_yaw = true;
+    }
+
+	eeprom_write_byte((uint8_t *)	EE_SWOP_YAW,  	swop_yaw);
+}
+
+
 static int8_t
 test_expo(uint8_t argc, const Menu::arg *argv)
 {
     if(argc!=3)
     {
-        cliSerial->printf_P(PSTR("Usage: set CH<1:4> <1:100>\n"));
+        cliSerial->printf_P(PSTR("Usage: expo CH<1:4,6> <1:100>\n"));
         return 0;
     }
 

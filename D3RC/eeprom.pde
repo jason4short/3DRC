@@ -80,7 +80,11 @@ load_eeprom(){
 	gimbal.set_reverse(eeprom_read_byte((uint8_t *)	EE_CH6_REV));
 	//roll.set_reverse(eeprom_read_byte((uint8_t *)	EE_CH7_REV));
 	//roll.set_reverse(eeprom_read_byte((uint8_t *)	EE_CH8_REV));
-	
+	preset_A_value = eeprom_read_byte((uint8_t *)	EE_PRESET_A);
+	preset_B_value = eeprom_read_byte((uint8_t *)	EE_PRESET_B);
+	swop_yaw = eeprom_read_byte((uint8_t *)	EE_SWOP_YAW);
+	//eeprom_write_byte((uint8_t *)	EE_CH7_REV,  	null.get_reverse());
+
 }
 
 

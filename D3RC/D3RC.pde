@@ -57,6 +57,7 @@ TX_Channel gimbal;
 AC_PID  pid_pitch(RATE_ROLL_P,		RATE_ROLL_I,		RATE_ROLL_D,		RATE_ROLL_IMAX);
 AC_PID  pid_roll(RATE_ROLL_P,		RATE_ROLL_I,		RATE_ROLL_D,		RATE_ROLL_IMAX);
 
+bool swop_yaw;
 
 // Camera Control
 // --------------------------
