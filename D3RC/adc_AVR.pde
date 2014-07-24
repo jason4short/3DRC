@@ -3,6 +3,8 @@
 #if ADC_INPUT == ADC_AVR
 // assume 
 
+static int8_t speed_counter;
+
 // called at 50hz
 static void
 read_adc()
@@ -12,6 +14,12 @@ read_adc()
 	adc_throttle 	= analogRead(3);
 	adc_yaw 		= analogRead(2);
     adc_gimbal      = analogRead(4);
+    //if(speed_counter++ > 20){
+      //  speed_counter = 0;
+        //adc_speed       = analogRead(5);
+        preset_speed = 10 + ((float)analogRead(5) / 1024) * 10;
+        
+    //}
 }
 
 

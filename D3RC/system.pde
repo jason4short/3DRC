@@ -30,19 +30,26 @@ init_settings()
 	yaw.set_dead_zone(20);
 	gimbal.set_dead_zone(100);
 	
-    
+    //eeprom_write_dword((uint32_t *)	EE_PRESET_A,  	0.0);
+    //eeprom_write_dword((uint32_t *)	EE_PRESET_B,  	90.0);
+
     load_eeprom();
 	print_radio_cal();
 
 
     // Setup Channel directions
-	throttle.set_reverse(false);
-	roll.set_reverse(false);
-	pitch.set_reverse(false);
-	yaw.set_reverse(true);
-	gimbal.set_reverse(false);
-
-
+	//throttle.set_reverse(false);
+	//pitch.set_reverse(false);
+	//gimbal.set_reverse(false);
+    /*
+    if(swop_yaw){
+    	yaw.set_reverse(false);
+	    roll.set_reverse(true);
+	}else{
+    	yaw.set_reverse(true);
+	    roll.set_reverse(false);
+	}
+*/
 
     
 	// sets us to position 0 of 5 which is Stabilize on most setups

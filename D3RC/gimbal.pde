@@ -2,29 +2,27 @@ static void
 gimbal_run()
 {
     // 50hz update
+    //cliSerial->printf("exit at %1.1f\n", camera_angle);
         
     // exit if the user inputs
     if(input_rate != 0){
         do_preset = false;
-    }
-
-    if(preset_change_flag) {
-        preset_change_flag = false;
-        update_preset(); 
-    }
+    }    
+    	//cliSerial->printf("%1.2f\n", camera_angle);
     // calc camera rotation
     if(do_preset){
         uint32_t delta_time = gimbal_timer - preset_time;
         camera_angle = camera_easing(delta_time, preset_start, preset_change, preset_duration);
+    	//cliSerial->printf("!! ", delta_time, camera_angle);
     	
-    	cliSerial->printf("run %ld\t%1.2f\n", delta_time, camera_angle);
+    	//cliSerial->printf("run %ld\t%1.2f\n", delta_time, camera_angle);
 
 
         // check gimbal_timer to exit preset
         if(delta_time >= preset_duration){
-    		cliSerial->printf("exit %ld\t%1.2f\n", delta_time, camera_angle);
+    		//cliSerial->printf("exit at %1.1f\n", camera_angle);
             do_preset = false;
-            current_preset_button = 0;
+            //current_preset_button = 0;
         }
     }else{
         calc_camera_rate();
@@ -41,6 +39,7 @@ gimbal_run()
         camera_rate = 0;
         camera_angle = MAX_ANGLE;
     }
+    //cliSerial->printf("run %1.2f\n", camera_angle);
     
     // output rotation
     //pwm_output[CH_6] = ((camera_angle - 45)* 500) / 45;
@@ -112,20 +111,20 @@ ease_user_input (float _delta, float _start, float _change, float _duration)
 
 
 static void
-update_preset()
+run_preset(uint8_t button)
 {
+    //cliSerial->printf("start, cam %1.2f\n", camera_angle);
     // are we currently performing action?
     // If so just exit
     if(do_preset)
         return;
     
-    cliSerial->printf("start %d, cam %1.2f\n", current_preset_button, camera_angle);
 
-    if(current_preset_button == preset_A_button){
+    if(button == PRESET_A_BUTTON){
         if(isNear(camera_angle, preset_A_value, 1.0)){
             // don't do preset if we are within 1 degree
             // of the desired preset
-            cliSerial->printf("near A \n");
+            //cliSerial->printf("near A \n");
             do_preset = false;
             return;
         }else{
@@ -136,7 +135,7 @@ update_preset()
         if(isNear(camera_angle, preset_B_value, 1.0)){
             // don't do preset if we are within 1 degree
             // of the desired preset
-            cliSerial->printf("near B \n");
+            //cliSerial->printf("near B \n");
             do_preset = false;
             return;
         }else{
@@ -145,7 +144,7 @@ update_preset()
         }
     }
     
-    cliSerial->printf("do preset \n");
+    //cliSerial->printf("do preset \n");
 
     // setup to perform preset 
     preset_time     = gimbal_timer;
@@ -153,9 +152,11 @@ update_preset()
     preset_change   = preset_target - camera_angle; //  0 - 45 = -45
     
     preset_duration = abs(preset_change *  (MAX_SPEED + 0.5 - preset_speed));
-	cliSerial->printf("preset_change %1.4f \n", preset_change);
-	cliSerial->printf("preset_speed %1.4f \n", preset_speed);
-	cliSerial->printf("preset_duration %1.4f \n", preset_duration);
+	//cliSerial->printf("camera_angle %1.4f \n", camera_angle);
+	//cliSerial->printf("preset_target %1.4f \n", preset_target);
+	//cliSerial->printf("preset_change %1.4f \n", preset_change);
+	//cliSerial->printf("preset_speed %1.4f \n", preset_speed);
+	//cliSerial->printf("preset_duration %1.4f \n", preset_duration);
     //preset_duration = 100;
 }
 

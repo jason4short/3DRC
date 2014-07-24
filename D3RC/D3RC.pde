@@ -75,7 +75,7 @@ static float MAX_SPEED = 20;
     
 // Presets
 // --------------------------
-static bool do_preset;
+static bool  do_preset;
 static float preset_target;
 static float preset_time;
 static float preset_start;
@@ -85,8 +85,7 @@ static float preset_speed = 20;
 static float preset_A_value; // = 0
 static float preset_B_value = 90;
 
-static uint16_t hold_timer;
-
+static uint32_t hold_timer;
 
 // used to enter CLI
 static uint8_t	crlf_count;
@@ -114,7 +113,7 @@ static uint8_t pointer;
 #endif
 
 // final reading of stick input
-int16_t adc_roll, adc_pitch, adc_throttle, adc_yaw, adc_gimbal;
+int16_t adc_roll, adc_pitch, adc_throttle, adc_yaw, adc_gimbal, adc_speed;
 int16_t pwm_output[8];
 
 volatile bool RC_flag;

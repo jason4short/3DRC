@@ -274,52 +274,90 @@ readCH_8()
 }
 
 static bool preset_isPressed;
+static bool preset_hold;
+static uint8_t prev_preset_press;
+
 static void
 read_Presets()
 {
-    uint8_t temp;
+    uint8_t temp = 0;
 
 	if(~PINL & SW5){
-		temp = preset_A_button;
-		//cliSerial->printf_P(PSTR("in A\n"));
+		temp = PRESET_A_BUTTON;
+		//cliSerial->printf_P(PSTR("in A %1.1f\n"), camera_angle);
 		
 	}else if(~PINL & SW4){
-		temp = preset_B_button;
-		//cliSerial->printf_P(PSTR("in B\n"));
+		temp = PRESET_B_BUTTON;
+		//cliSerial->printf_P(PSTR("in B %1.1f\n"), camera_angle);
 	}
 	
-	if(temp > 0 && preset_isPressed == false){
-	    // this is a change
-	    preset_isPressed = true;
-	    // restart the hold timer
-	    hold_timer = gimbal_timer;
-	    
-	}else if(temp == 0){
-	    preset_isPressed = false;
-	    // reset the hold timer
-	    hold_timer = 0;
-	}
-	
-	// are we pressing & holding a button?
-	if(hold_timer != 0 && (gimbal_timer - hold_timer) > 100){
-	    // save preset angle
-	    if(temp == preset_A_button){
-	        preset_A_value = camera_angle;
-        	eeprom_write_byte((uint8_t *)	EE_PRESET_A,  	(uint8_t)preset_A_value);
+	// release 
+	// previous != 0
+	// temo = 0;
+    if(prev_preset_press != 0 && temp == 0){
+    	//cliSerial->printf_P(PSTR("release! %d\n"), temp);
 
-	    }else if (temp == preset_B_button){
-	        preset_B_value = camera_angle; 
-        	eeprom_write_byte((uint8_t *)	EE_PRESET_B,  	(uint8_t)preset_B_value);
-	    }
-	    hold_timer = 0;
-	}
-	
-    if(preset_isPressed && temp != current_preset_button){
-		//cliSerial->printf_P(PSTR("new Butt!\n"));
-        current_preset_button = temp;
-		preset_change_flag = 1;
-	}
+        // we have a release
+        // was hold timer triggerd?
+        if (preset_hold){
+    		//cliSerial->printf_P(PSTR("trigger Hold %u\n"), prev_preset_press);
+            save_preset(prev_preset_press);
+        }else{ // press
+    		//cliSerial->printf_P(PSTR("trigger press %u\n"), prev_preset_press);
+            run_preset(prev_preset_press);
+        }
+        
+        // we're no longer tracking the hold
+        preset_hold = false;
+    	//cliSerial->printf_P(PSTR("preset_hold false\n"));
+
+        // remember no button is pressed
+        prev_preset_press = 0;
+        
+        //bail
+        return;
+    }
+    //
+
+    // bail if no button is pressed
+    if(temp == 0){
+        preset_hold = 0;
+        hold_timer = 0;
+        return;
+    }
+    
+    // new button is pressed
+    if(prev_preset_press == 0 && temp != 0){
+	    hold_timer = gimbal_timer;
+    	//cliSerial->printf_P(PSTR("save hold timer %lu  %lu\n"), gimbal_timer, hold_timer);
+    }
+    
+    // check delay length
+    if((gimbal_timer - hold_timer) > 150){
+    	//cliSerial->printf_P(PSTR("preset_hold true!  %lu   %lu\n"), gimbal_timer, hold_timer);
+        preset_hold = true;
+    }else{
+        preset_hold = false;
+    }
+    prev_preset_press = temp;
+    	
 }
 
+static void
+save_preset(uint8_t button)
+{
+    //cliSerial->printf_P(PSTR("save preset %d\n"), button);
+    
+    if(button == PRESET_A_BUTTON){
+        preset_A_value = camera_angle;
+        eeprom_write_dword((uint32_t *)	EE_PRESET_A,  	preset_A_value);
+        //cliSerial->printf_P(PSTR("Hold A %1.2f\n"), preset_A_value);
 
+    }else if (button == PRESET_B_BUTTON){
+        preset_B_value = camera_angle; 
+        eeprom_write_dword((uint32_t *)	EE_PRESET_B,  	preset_B_value);
+        //cliSerial->printf_P(PSTR("Hold B %1.2f\n"), preset_B_value);
+    }
+
+}
 #endif

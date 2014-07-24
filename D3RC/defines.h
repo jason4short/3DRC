@@ -45,9 +45,10 @@
 #define EE_CH7_REV 0x2B
 #define EE_CH8_REV 0x2C
 #define EE_CH6_EXPO 0x2D
-#define EE_PRESET_A 0x2F
-#define EE_PRESET_B 0x30
-#define EE_SWOP_YAW 0x31
+#define EE_SWOP_YAW 0x2f
+#define EE_PRESET_A 0x30
+#define EE_PRESET_B 0x34
+
 
 #define ADC_AVR     1
 #define ADC_I2C     2
@@ -71,8 +72,8 @@
 
 
 
-#define preset_A_button 1
-#define preset_B_button 2
+#define PRESET_A_BUTTON 1
+#define PRESET_B_BUTTON 2
 
 
 
