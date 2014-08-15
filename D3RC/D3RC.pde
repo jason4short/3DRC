@@ -18,12 +18,11 @@
 // Header includes
 ////////////////////////////////////////////////////////////////////////////////
 
- #define ADC_INPUT  ADC_AVR
- //#define ADC_INPUT    ADC_I2C
+// #define ADC_INPUT  ADC_AVR
+#define ADC_INPUT    ADC_I2C
 
-
- #define BOARD_TYPE  APM_BOARD
- //#define BOARD_TYPE    PRO_MINI_BOARD
+//#define BOARD_TYPE  APM_BOARD
+#define BOARD_TYPE    PRO_MINI_BOARD
 
 
 #include <FastSerial.h>
@@ -190,8 +189,11 @@ void loop()
         readCH_5();
         readCH_7();
         readCH_8();
+        
+        #if GIMBAL == ENABLED
         read_Presets();
         gimbal_run();
+        #endif
         
 		counter_one_herz++;
 

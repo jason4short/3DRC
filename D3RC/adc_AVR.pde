@@ -46,7 +46,12 @@ update_sticks()
 	pwm_output[CH_3] = throttle.get_PWM_linear();  /// XXX
 	pwm_output[CH_4] = yaw.get_PWM_angle(false);
 	pwm_output[CH_6] = gimbal.get_PWM_angle(false);
+	
+#if GIMBAL == ENABLED
     input_rate = gimbal.get_PWM_angle(true);
+#else
+	pwm_output[CH_6] = gimbal.get_PWM_angle(false);
+#endif
 }
 
 #endif

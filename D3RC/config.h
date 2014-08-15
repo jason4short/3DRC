@@ -24,9 +24,13 @@
 #include "defines.h"
 
 
+#define GIMBAL DISABLED
+//#define GIMBAL ENABLED
+
 #if BOARD_TYPE == PRO_MINI_BOARD
     // Analog pin 0 for gimbal control
     #define CH6_GIMBAL 0
+    #define SW1 (1<<1)
     #define SW2 (1<<2)
     #define SW3 (1<<3)
     #define SW4 (1<<4)
@@ -37,6 +41,7 @@
 #elif BOARD_TYPE == APM_BOARD
     // Analog pin 0 for gimbal control
     #define CH6_GIMBAL 4
+    #define SW1 (1<<1)
     #define SW2 (1<<2)
     #define SW3 (1<<3)
     #define SW4 (1<<4)

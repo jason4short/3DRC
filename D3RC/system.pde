@@ -66,7 +66,7 @@ update_control_mode()
     // PWM is mapped to mode_pwm's preset values
 	pwm_output[CH_5] = mode_pwm[current_mode];
 
-	cliSerial->printf_P(PSTR("PWM Out %d\n"), pwm_output[CH_5]);
+	//cliSerial->printf_P(PSTR("PWM Out %d\n"), pwm_output[CH_5]);
 }
 
 

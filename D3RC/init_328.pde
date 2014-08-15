@@ -35,6 +35,7 @@ void init_arduRC()
 	digitalWrite(5, HIGH);
 	digitalWrite(6, HIGH);
 	digitalWrite(7, HIGH);
+	digitalWrite(8, HIGH);
 
 	//pinMode(pin, INPUT);           // set pin to input
 	//digitalWrite(pin, HIGH);       // turn on pullup resistors
@@ -142,6 +143,12 @@ ISR(PCINT0_vect)
 
 
 
+// radio PWM input timers
+static void
+readCH_5()
+{
+}
+
 
 
 static void
@@ -159,7 +166,7 @@ static void
 readCH_8()
 {
     // IS CH 7 high?
-    if(~PINB & 1){
+    if(~PINB & SW2){
         pwm_output[CH_8] = 1000;
     }else{
         pwm_output[CH_8] = 2000;

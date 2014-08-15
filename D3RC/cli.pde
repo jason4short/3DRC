@@ -160,6 +160,11 @@ static int8_t
 test_swop(uint8_t argc, const Menu::arg *argv)
 {
 	if(argc!=2){
+		if(swop_yaw)
+    		cliSerial->printf_P(PSTR("Swop on\n"));
+    	else
+    	    cliSerial->printf_P(PSTR("Swop off\n\n"));
+
 		cliSerial->printf_P(PSTR("Usage: swop 1(on) : 0(off)\n"));
 		return 0;
 	}
@@ -284,7 +289,7 @@ test_cal_sticks(uint8_t argc, const Menu::arg *argv)
 		yaw.update_min_max();
 		gimbal.update_min_max();
 
-		cliSerial->printf_P(PSTR("%d\t%d \t%d\t%d \t%d\t%d \t%d\t%d | \t%d\t%d | \t%d\t%d\n"),
+		cliSerial->printf_P(PSTR("%d\t%d |\t%d\t%d |\t%d\t%d |\t%d\t%d | \t%d\t%d\n"),
 					roll._adc_min, 		roll._adc_max,
 					pitch._adc_min, 	pitch._adc_max,
 					throttle._adc_min, 	throttle._adc_max,
@@ -336,9 +341,22 @@ test_ppm(uint8_t argc, const Menu::arg *argv)
 	while(1) {
 		delay(20);
 		read_adc();
+        readCH_5();
+        readCH_7();
+        readCH_8();
 		update_sticks();
+        // PWM is mapped to mode_pwm's preset values
+    	pwm_output[CH_5] = mode_pwm[current_mode];
 
-		cliSerial->printf("%d, %d, %d, %d | %1.3f\n", pwm_output[CH_1], pwm_output[CH_2], pwm_output[CH_3], pwm_output[CH_4], input_rate);
+		cliSerial->printf("%d, %d, %d, %d | %d, %d, %d, %d\n", 
+		                                            pwm_output[CH_1], 
+		                                            pwm_output[CH_2], 
+		                                            pwm_output[CH_3], 
+		                                            pwm_output[CH_4], 
+		                                            pwm_output[CH_5], 
+		                                            pwm_output[CH_6], 
+		                                            pwm_output[CH_7], 
+		                                            pwm_output[CH_8]);
 
 		if(cliSerial->available() > 0) {
 			delay(20);

@@ -32,18 +32,29 @@ update_sticks()
 
     adc_gimbal = analogRead(CH6_GIMBAL);
 
-	roll.set_ADC(adc_roll);
+
 	pitch.set_ADC(adc_pitch);
 	throttle.set_ADC(adc_throttle);
-	yaw.set_ADC(adc_yaw);
 	gimbal.set_ADC(adc_gimbal);
+
+    if(swop_yaw){
+    	roll.set_ADC(adc_yaw);
+	    yaw.set_ADC(adc_roll);
+    
+    }else{
+    	roll.set_ADC(adc_roll);
+	    yaw.set_ADC(adc_yaw);
+    }
 
 	pwm_output[CH_1] = roll.get_PWM_angle(false);
 	pwm_output[CH_2] = pitch.get_PWM_angle(false);
 	pwm_output[CH_3] = throttle.get_PWM_linear();  /// XXX
 	pwm_output[CH_4] = yaw.get_PWM_angle(false);
-	//pwm_output[CH_6] = gimbal.get_PWM_angle(false);
+#if GIMBAL == ENABLED
     input_rate = gimbal.get_PWM_angle(true);
+#else
+	pwm_output[CH_6] = gimbal.get_PWM_angle(false);
+#endif
 }
 
 
